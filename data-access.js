@@ -24,10 +24,11 @@ async function dbStartup() {
 async function getCustomers() {
   try {
     const customers = await collection.find({}).toArray();
-    return [customers,null];
+    //throw { message: "an error occured" };
+    return [customers, null];
   } catch (err) {
     console.log(err.message);
-    return [null,err.message];
+    return [null, err.message];
   }
 }
 
