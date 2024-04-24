@@ -32,5 +32,45 @@ async function getCustomers() {
   }
 }
 
+async function resetCustomers() {
+  const customers = [
+    {
+      id: 3,
+      name: "AAA",
+      email: "maryj@abc.com",
+      password: "maryj",
+    },
+    {
+      id: 4,
+      name: "BBB",
+      email: "karena@abc.com",
+      password: "karena",
+    },
+    {
+      id: 5,
+      name: "CCC",
+      email: "scottr@abc.com",
+      password: "scottr",
+    },
+    {
+      id: 6,
+      name: "DDD",
+      email: "scottr@abc.com",
+      password: "scottr",
+    },
+  ];
+  try {
+    await collection.deleteMany({});
+    await collection.insertMany(customers);
+    const custCount = await collection.countDocuments();
+    if (custCount) {
+      return [custCount, null];
+    }
+  } catch (err) {
+    console.log(err.message);
+    return [null, err.message];
+  }
+}
+
 dbStartup();
-module.exports = { getCustomers };
+module.exports = { getCustomers, resetCustomers };

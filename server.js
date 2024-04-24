@@ -9,9 +9,19 @@ app.listen(PORT, () => console.log(`Your server is running on port ${PORT}`));
 
 app.get("/customers", async (req, res) => {
   const [cust, err] = await da.getCustomers();
-  if (cust != null) {
+  if (cust) {
     res.send(cust);
   } else {
     res.status(500).send(err);
+  }
+});
+
+app.get("/reset", async (req, res) => {
+  const [custCount, err] = await da.resetCustomers();
+  if (custCount) {
+    res.send(custCount.toString());
+  } else {
+    if (statusCode >= 100 && statusCode < 600) res.status(statusCode);
+    else res.status(500).send(err);
   }
 });
