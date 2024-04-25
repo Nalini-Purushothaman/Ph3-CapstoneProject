@@ -72,5 +72,15 @@ async function resetCustomers() {
   }
 }
 
+async function addCustomer(newCustomer) {
+  try {
+    const result = await collection.insertOne(newCustomer);
+    return ["success", result.insertedId, null];
+  } catch (err) {
+    console.log("Error in dataaccess", err.message);
+    return ["fail", null, err.message];
+  }
+}
+
 dbStartup();
-module.exports = { getCustomers, resetCustomers };
+module.exports = { getCustomers, resetCustomers, addCustomer };

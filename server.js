@@ -1,14 +1,17 @@
 const express = require("express");
 const path = require("path");
 const da = require("./data-access");
+const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = 4000;
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(PORT, () => console.log(`Your server is running on port ${PORT}`));
 
 app.get("/customers", async (req, res) => {
   const [cust, err] = await da.getCustomers();
+  console.log("get customer");
   if (cust) {
     res.send(cust);
   } else {
@@ -18,10 +21,28 @@ app.get("/customers", async (req, res) => {
 
 app.get("/reset", async (req, res) => {
   const [custCount, err] = await da.resetCustomers();
+  console.log("reset customer");
   if (custCount) {
     res.send(custCount.toString());
   } else {
-    if (statusCode >= 100 && statusCode < 600) res.status(statusCode);
-    else res.status(500).send(err);
+    res.status(500).send(err);
+  }
+});
+
+app.post("/customers", async (req, res) => {
+  const newCustomer = req.body;
+  console.log("add new customer");
+  if (Object.keys(req.body).length === 0) {
+    res.status(400).send("missing request body");
+  } else {
+    const [status, id, err] = await da.addCustomer(newCustomer);
+    if (status === "success") {
+      res.status(201);
+      let response = { ...newCustomer };
+      response["_id"] = id;
+      res.send(response);
+    } else {
+      res.status(400).send(err);
+    }
   }
 });
