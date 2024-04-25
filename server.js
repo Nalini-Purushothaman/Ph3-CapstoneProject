@@ -1,8 +1,8 @@
 const express = require("express");
 const path = require("path");
 const da = require("./data-access");
+const au = require("./authentication");
 const bodyParser = require("body-parser");
-require("dotenv").config();
 
 // var url = require('url');
 // var url_parts = url.parse(request.url, true);
@@ -10,29 +10,12 @@ require("dotenv").config();
 
 const app = express();
 const PORT = 4000;
-const apiKey = process.env.API_KEY;
+
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(PORT, () => console.log(`Your server is running on port ${PORT}`));
 
-const authenticateKey = (req, res, next) => {
-  //let api_key = req.header("x-api-key"); //Add API key to headers
-  var query = require("url").parse(req.url, true).query; // api key from query param
-  let api_key = query.api_key;
-  let auth = false;
-  if (!api_key) {
-    res.status(401).send("API Key is missing");
-  } else if (apiKey === api_key) {
-    auth = true;
-  } else {
-    res.status(403).send("API Key is invalid");
-  }
-  if (auth) {
-    next();
-  }
-};
-
-app.get("/customers", authenticateKey, async (req, res) => {
+app.get("/customers", au.authenticateKey, async (req, res) => {
   const [cust, err] = await da.getCustomers();
   console.log("get customer");
   if (cust) {
@@ -42,7 +25,7 @@ app.get("/customers", authenticateKey, async (req, res) => {
   }
 });
 
-app.get("/reset", authenticateKey, async (req, res) => {
+app.get("/reset", au.authenticateKey, async (req, res) => {
   const [custCount, err] = await da.resetCustomers();
   console.log("reset customer");
   if (custCount) {
@@ -52,7 +35,7 @@ app.get("/reset", authenticateKey, async (req, res) => {
   }
 });
 
-app.post("/customers", authenticateKey, async (req, res) => {
+app.post("/customers", au.authenticateKey, async (req, res) => {
   const newCustomer = req.body;
   console.log("add new customer");
   if (Object.keys(req.body).length === 0) {
@@ -70,7 +53,7 @@ app.post("/customers", authenticateKey, async (req, res) => {
   }
 });
 
-app.get("/customers/:id", authenticateKey, async (req, res) => {
+app.get("/customers/:id", au.authenticateKey, async (req, res) => {
   const [cust, err] = await da.getCustomerById(req.params.id);
   console.log("get customer by id");
   if (cust) {
@@ -80,7 +63,7 @@ app.get("/customers/:id", authenticateKey, async (req, res) => {
   }
 });
 
-app.put("/customers/:id", authenticateKey, async (req, res) => {
+app.put("/customers/:id", au.authenticateKey, async (req, res) => {
   const updatedCustomer = req.body;
   const id = updatedCustomer.id;
   if (Object.keys(req.body).length === 0) {
@@ -97,7 +80,7 @@ app.put("/customers/:id", authenticateKey, async (req, res) => {
   }
 });
 
-app.delete("/customers/:id", authenticateKey, async (req, res) => {
+app.delete("/customers/:id", au.authenticateKey, async (req, res) => {
   const id = req.params.id;
   console.log("delete customer by id");
   const [message, errMessage] = await da.deleteCustomerById(id);
