@@ -109,6 +109,19 @@ async function updateCustomer(updatedCustomer) {
   }
 }
 
+async function deleteCustomerById(id) {
+  try {
+    const result = await collection.deleteOne({ id: +id });
+    if (result.deletedCount == 0) {
+      return [null, "No such document found"];
+    } else {
+      return ["Document successfully deleted", null];
+    }
+  } catch (err) {
+    return [null, err.message];
+  }
+}
+
 dbStartup();
 module.exports = {
   getCustomers,
@@ -116,4 +129,5 @@ module.exports = {
   addCustomer,
   getCustomerById,
   updateCustomer,
+  deleteCustomerById,
 };
