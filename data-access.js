@@ -77,10 +77,21 @@ async function addCustomer(newCustomer) {
     const result = await collection.insertOne(newCustomer);
     return ["success", result.insertedId, null];
   } catch (err) {
-    console.log("Error in dataaccess", err.message);
     return ["fail", null, err.message];
   }
 }
 
+async function getCustomerById(id) {
+  try {
+    const customer = await collection.findOne({ id: +id });
+    if (!customer) {
+      return [null, "No such customer found"];
+    }
+    return [customer, null];
+  } catch (err) {
+    return [null, err.message];
+  }
+}
+
 dbStartup();
-module.exports = { getCustomers, resetCustomers, addCustomer };
+module.exports = { getCustomers, resetCustomers, addCustomer, getCustomerById };

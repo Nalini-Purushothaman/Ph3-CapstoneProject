@@ -46,3 +46,13 @@ app.post("/customers", async (req, res) => {
     }
   }
 });
+
+app.get("/customers/:id", async (req, res) => {
+  const [cust, err] = await da.getCustomerById(req.params.id);
+  console.log("get customer by id");
+  if (cust) {
+    res.send(cust);
+  } else {
+    res.status(404).send(err);
+  }
+});
