@@ -93,5 +93,27 @@ async function getCustomerById(id) {
   }
 }
 
+async function updateCustomer(updatedCustomer) {
+  try {
+    const result = await collection.updateOne(
+      { id: updatedCustomer.id },
+      { $set: updatedCustomer }
+    );
+    if (result.modifiedCount === 0) {
+      return [null, "No such id found for update"];
+    } else {
+      return ["Document updated successfully", null];
+    }
+  } catch (err) {
+    return [null, err.message];
+  }
+}
+
 dbStartup();
-module.exports = { getCustomers, resetCustomers, addCustomer, getCustomerById };
+module.exports = {
+  getCustomers,
+  resetCustomers,
+  addCustomer,
+  getCustomerById,
+  updateCustomer,
+};

@@ -56,3 +56,20 @@ app.get("/customers/:id", async (req, res) => {
     res.status(404).send(err);
   }
 });
+
+app.put("/customers/:id", async (req, res) => {
+  const updatedCustomer = req.body;
+  const id = updatedCustomer.id;
+  if (Object.keys(req.body).length === 0) {
+    res.status(400).send("missing request body");
+  } else {
+    delete updatedCustomer._id;
+    const [msg, err] = await da.updateCustomer(updatedCustomer);
+    console.log("update customer by id");
+    if (msg) {
+      res.send(msg);
+    } else {
+      res.status(400).send(err);
+    }
+  }
+});
